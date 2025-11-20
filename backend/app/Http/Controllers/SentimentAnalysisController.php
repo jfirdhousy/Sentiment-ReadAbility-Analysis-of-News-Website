@@ -195,6 +195,16 @@ class SentimentAnalysisController extends Controller
                 ]
             ]);
 
+            if (!$response->successful()) {
+                // Tambahkan log ini:
+                \Illuminate\Support\Facades\Log::error('GEMINI API CALL FAILED:', [
+                    'status' => $response->status(), 
+                    'body' => $response->body() // Catat body untuk melihat error dari Gemini
+                ]);
+                
+                return $this->simpleSentimentAnalysis($text, true); 
+            }
+
             if ($response->successful()) {
                 $result = $response->json();
                 $geminiText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
